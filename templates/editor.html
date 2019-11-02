@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if article %}
+    <title>Edit: {{ article['title'] }} | It's Tim Johnson</title>
+    {% else %}
+    <title>New Article | It's Tim Johnson</title>
+    {% endif %}
+    <link rel="stylesheet" type="text/css" href="/static/editor.css">
+</head>
+<body>
+    {% if article %}
+    <h1>Edit: {{ article['title'] }}</h1>
+    {% else %}
+    <h1>New Article</h1>
+    {% endif %}
+    <form action="/save" method="POST">
+        <label for="title">Title: </label>
+        <input id="title" value="{{ article['title'] if article else '' }}"></input><br/>
+    </form>
+</body>
+</html>

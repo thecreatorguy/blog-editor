@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article List | It's Tim Johnson</title>
+    <link rel="stylesheet" type="text/css" href="/static/editor.css">
+</head>
+<body>
+    <h1>Article List</h1>
+    <a href='/new'>Create New Article</a>
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Release At</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for article in articles %}
+        <tr>
+            <td>{{ article['title'] }}</td>
+            <td>{{ article['release_at'] }}</td>
+            <td>{{ article['created_at'] }}</td>
+            <td>{{ article['updated_at'] }}</td>
+            <td><a href="/edit/{{ article['id'] }}">Edit</a></td>
+            <td><button onclick="sendDelete({{ article['id'] }})">Delete</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+<script>
+async function sendDelete(id) {
+    response = await fetch(`delete/${id}`, {
+        method: 'DELETE'
+    });
+    if (response.status == 278) {
+        window.location.replace(response.headers.get('location'));
+    }
+}
+</script>
+</html>
