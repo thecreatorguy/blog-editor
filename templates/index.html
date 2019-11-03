@@ -21,7 +21,7 @@
         {% for article in articles %}
         <tr>
             <td>{{ article['title'] }}</td>
-            <td>{{ article['release_at'] }}</td>
+            <td>{{ article['release_at'] or 'Never'}}</td>
             <td>{{ article['created_at'] }}</td>
             <td>{{ article['updated_at'] }}</td>
             <td><a href="/edit/{{ article['id'] }}">Edit</a></td>
@@ -32,7 +32,7 @@
 </body>
 <script>
 async function sendDelete(id) {
-    response = await fetch(`delete/${id}`, {
+    response = await fetch(`/delete/${id}`, {
         method: 'DELETE'
     });
     if (response.status == 278) {
