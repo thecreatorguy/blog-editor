@@ -1,12 +1,56 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    padding: 1em;
+}
+
+input {
+    margin: 0.25em 0;
+}
+
+button {
+    padding: 0.1em 0.5em;
+}
+
 table {
     border-collapse: collapse;
 }
 
 table, th, td {
-  border: 1px solid black;
+    border: 1px solid black;
 }
 
 td {
     padding: 2px 1em;
     text-align: center;
 }
+
+#content {
+    border: 1px solid gray;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1em;
+    margin: 1em auto;
+    padding: 1em 3.5em;
+    width: 900px;
+    max-width: 100%;
+}
+
+#content .poem {
+    background-color: #DDD;
+    border-radius: 3px;
+    padding: 0.25em 0 0.25em 2em;
+    width: 650px;
+    max-width: 100%;
+}
+
