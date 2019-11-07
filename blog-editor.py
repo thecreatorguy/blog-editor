@@ -4,14 +4,15 @@ My blog editor flask application.
 from flask import Flask, render_template, request, redirect, url_for
 import requests
 from requests.auth import HTTPBasicAuth
+import base64
 
 app = Flask(__name__)
-API_ROUTE = 'http://localhost/api/article'
+API_ROUTE = 'http://itstimjohnson.com/api/article'
 
 @app.route('/')
 def index():
     """Gets the webpage with all articles"""
-    r = requests.get(API_ROUTE, auth=_auth())
+    r = requests.get(API_ROUTE, headers={'Auth': _auth()})
     if r.status_code != requests.codes.ok:
         return r.text, r.status_code
 
@@ -26,7 +27,7 @@ def new():
 @app.route('/edit/<int:id>')
 def edit(id):
     """Edit existing article form"""
-    r = requests.get(API_ROUTE + '/' + str(id), auth=_auth())
+    r = requests.get(API_ROUTE + '/' + str(id), headers={'Auth': _auth()})
     if r.status_code != requests.codes.ok:
         return r.text, r.status_code
 
@@ -40,11 +41,11 @@ def save():
         form_data['release-at'] = None
 
     if not 'id' in form_data:
-        r = requests.post(API_ROUTE, auth=_auth(), json=form_data)
+        r = requests.post(API_ROUTE, headers={'Auth': _auth()}, json=form_data)
         if r.status_code != requests.codes.created:
             return r.text, r.status_code
     else:
-        r = requests.put(API_ROUTE + '/' + str(request.form['id']), auth=_auth(), json=form_data)
+        r = requests.put(API_ROUTE + '/' + str(request.form['id']), headers={'Auth': _auth()}, json=form_data)
         if r.status_code != requests.codes.ok:
             return r.text, r.status_code
 
@@ -53,7 +54,7 @@ def save():
 @app.route('/delete/<int:id>', methods=['DELETE'])
 def delete(id):
     """Delete an existing article"""
-    r = requests.delete(API_ROUTE + '/' + str(id), auth=_auth())
+    r = requests.delete(API_ROUTE + '/' + str(id), headers={'Auth': _auth()})
     if r.status_code != requests.codes.no_content:
         return r.text, r.status_code
     return redirect(url_for('index'), code=278)
@@ -62,4 +63,5 @@ def _auth():
     """Retrieve username and password from hidden file and construct auth object"""
     with open('api-credentials.txt', 'r') as f:
         lines = f.read().splitlines()
-        return HTTPBasicAuth(lines[0], lines[1])
+    credentials = lines[0] + ':' + lines[1]
+    return 'Basic ' + base64.b64encode(credentials.encode()).decode()
