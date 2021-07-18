@@ -24,8 +24,8 @@
             <td>{{ article['release_at'] or 'Never'}}</td>
             <td>{{ article['created_at'] }}</td>
             <td>{{ article['updated_at'] }}</td>
-            <td><a href="/edit/{{ article['id'] }}">Edit</a></td>
-            <td><button onclick="sendDelete({{ article['id'] }})">Delete</button></td>
+            <td><a href="/edit/{{ loop.index0 }}">Edit</a></td>
+            <td><button onclick="sendDelete({{ loop.index0 }})">Delete</button></td>
         </tr>
         {% endfor %}
     </table>

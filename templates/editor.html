@@ -25,8 +25,11 @@
     <h1>New Article</h1>
     {% endif %}
     <form id="form">
+        <label for="url_key">URL Key: </label>
         {% if article %}
-        <input type="hidden" name="id" value="{{ article['id'] }}">
+        <input name="url_key" readonly value="{{ article['url_key'] }}"></input><br/>
+        {% else %}
+        <input name="url_key" value=""></input><br/>
         {% endif %}
         <label for="title">Title: </label>
         <input id="title" name="title" value="{{ article['title'] if article else '' }}"></input><br/>

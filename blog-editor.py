@@ -5,18 +5,20 @@ from flask import Flask, render_template, request, redirect, url_for
 import requests
 from requests.auth import HTTPBasicAuth
 import base64
+import os
 
 app = Flask(__name__)
-API_ROUTE = 'http://itstimjohnson.com/api/article'
+HOST = os.getenv('HOST')
+HEADERS = {'X-Api-Key': os.getenv('API_KEY')}
 
 @app.route('/')
 def index():
     """Gets the webpage with all articles"""
-    r = requests.get(API_ROUTE, headers={'Auth': _auth()})
+    r = requests.get(HOST + '/api/articles', headers=HEADERS)
     if r.status_code != requests.codes.ok:
         return r.text, r.status_code
 
-    articles = sorted(r.json(), key=lambda article: (article['release_at'] or '9', article['updated_at']), reverse=True)
+    articles = r.json()
     return render_template('index.html', articles=articles)
 
 @app.route('/new')
@@ -24,14 +26,14 @@ def new():
     """New article form"""
     return render_template('editor.html')
 
-@app.route('/edit/<int:id>')
-def edit(id):
+@app.route('/edit/<int:article_id>')
+def edit(article_id):
     """Edit existing article form"""
-    r = requests.get(API_ROUTE + '/' + str(id), headers={'Auth': _auth()})
+    r = requests.get(HOST + '/api/articles', headers=HEADERS)
     if r.status_code != requests.codes.ok:
         return r.text, r.status_code
 
-    return render_template('editor.html', article=r.json())
+    return render_template('editor.html', article=r.json()[article_id])
 
 @app.route('/save', methods=['POST'])
 def save():
@@ -40,28 +42,19 @@ def save():
     if (form_data['release-at'] == 'Never'):
         form_data['release-at'] = None
 
-    if not 'id' in form_data:
-        r = requests.post(API_ROUTE, headers={'Auth': _auth()}, json=form_data)
-        if r.status_code != requests.codes.created:
-            return r.text, r.status_code
-    else:
-        r = requests.put(API_ROUTE + '/' + str(request.form['id']), headers={'Auth': _auth()}, json=form_data)
-        if r.status_code != requests.codes.ok:
-            return r.text, r.status_code
+    r = requests.post(HOST + '/api/articles', headers=HEADERS, json=form_data)
+    if r.status_code != requests.codes.created:
+        return r.text, r.status_code
 
     return redirect(url_for('index'), code=278)
 
-@app.route('/delete/<int:id>', methods=['DELETE'])
-def delete(id):
+@app.route('/delete/<int:article_id>', methods=['DELETE'])
+def delete(article_id):
     """Delete an existing article"""
-    r = requests.delete(API_ROUTE + '/' + str(id), headers={'Auth': _auth()})
+    r = requests.delete(HOST + '/' + str(article_id), headers=HEADERS)
     if r.status_code != requests.codes.no_content:
         return r.text, r.status_code
     return redirect(url_for('index'), code=278)
 
-def _auth():
-    """Retrieve username and password from hidden file and construct auth object"""
-    with open('api-credentials.txt', 'r') as f:
-        lines = f.read().splitlines()
-    credentials = lines[0] + ':' + lines[1]
-    return 'Basic ' + base64.b64encode(credentials.encode()).decode()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')

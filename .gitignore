@@ -4,3 +4,5 @@ __pycache__
 venv
 
 api-credentials.txt
+
+.env
